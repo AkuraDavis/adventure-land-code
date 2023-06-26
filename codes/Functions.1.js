@@ -125,7 +125,11 @@ function move_to_position(target, enemydist) //Movement Algorithm
         last_x = character.real_x;
         last_y = character.real_y;
 
-        draw_line(character.real_x, character.real_y, new_x, new_y, 2, 0x00FF00);
+        let line = draw_line(character.real_x, character.real_y, new_x, new_y, 2, 0x00FF00);
+        // Only persist lines for a few seconds
+        setTimeout(function(){
+            line.destroy();
+        },5000);
 
         move(new_x, new_y);
     } catch (error) {
