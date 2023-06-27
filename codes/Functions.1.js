@@ -41,16 +41,18 @@ function auto_attack(){
 
     if(!is_in_range(target))
     {
-
         set_message("Approaching...");
         move_to_position(target, -character.range*.25);
     }
-    else if(can_attack(target))
+
+    if(can_attack(target))
     {
         set_message("Attacking");
         attack(target);
-    } else {
-        // In range but cant attack, kite
+    }
+
+    if(distance(character, target) < (character.range/2)){
+        // Too close, move back
 
         set_message("Kiting...");
         move_to_position(target, character.range);
@@ -240,30 +242,27 @@ function restock(){
     if(quantity('hpot0') < 50){
         set_message("Restocking...");
 
-        if(!restocking) use_skill('use_town');
-        sleep(5000);
-        restocking = true;
+        if(!is_moving(character) && distance(character, find_npc('fancypots')) > 400) {
+            if(!restocking) use_skill('use_town');
+            restocking = true;
 
-        if(!is_moving(character) && distance(character, find_npc('fancypots')) > 200) {
             smart_move(find_npc('fancypots'));
         } else {
             buy("hpot0", 100);
         }
 
-    }
-
-    if(quantity('mpot0') < 50){
+    } else if(quantity('mpot0') < 50){
         set_message("Restocking...");
 
-        if(!restocking) use_skill('use_town');
-        sleep(5000);
-        restocking = true;
-
-        if(!is_moving(character) && distance(character, find_npc('fancypots')) > 200) {
+        if(!is_moving(character) && distance(character, find_npc('fancypots')) > 400) {
+            if(!restocking) use_skill('use_town');
+            restocking = true;
             smart_move(find_npc('fancypots'));
         } else {
             buy("mpot0", 100);
         }
+    } else {
+        restocking = false;
     }
 }
 
