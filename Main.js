@@ -13,14 +13,15 @@ let mob_target = "armadillo";
 load_code(1);
 
 setInterval(function(){
+    if(character.rip){ set_message("Respawning..."); setTimeout(function(){respawn();}, 15000); }
 
-	smart_potions();
-	restock();
-	loot();
-	xp_tracker();
+    smart_potions();
+    restock();
+    loot();
+    xp_tracker();
 
-	auto_attack();
-	auto_party();
-	assist();
+    auto_attack();
+    auto_party();
+    assist();
 
 },1000/4); // Loops every 1/4 seconds.
