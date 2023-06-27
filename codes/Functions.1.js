@@ -147,7 +147,13 @@ function get_first_pathable(target, enemydist, path_x, path_y, clockwise = true)
     let max_loop = 15;
 
     while (!can_move_to(path_x, path_y)) {
-        if(loop >= max_loop){ break; }
+        if(loop >= max_loop){
+            // Had a major pathing problem... lets reorient relative to target
+            if(!is_moving(character)) {
+                smart_move(target);
+            }
+            break;
+        }
 
         if(!clockwise) {
             deflection -= degrees * (Math.PI / 180); // Increase deflection by 5 degrees (converted to radians)
