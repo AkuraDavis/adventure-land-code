@@ -25,6 +25,7 @@ function auto_attack(){
     let target=get_targeted_monster();
     if(!target)
     {
+        if(!mob_target){ change_target(desired_target); }
         target=get_nearest_monster({max_att: 80, type:mob_target});
         if(target) change_target(target);
         else
@@ -325,6 +326,10 @@ function assist(){
             smart_move(target.x, target.y)
         }
     }
+}
+
+function change_target(mob){
+    mob_target = mob;
 }
 
 let current_xp;
