@@ -5,19 +5,21 @@ function smart_potions() {
 
     if (is_on_cooldown("use_hp")) return;
 
-    if(character.hp/character.max_hp < 0.5) {
+    if(character.hp/character.max_hp < 0.8) {
         use_skill('use_hp');
         log('Used Health Potion!');
     } else if (character.mp / character.max_mp < 0.5) {
         use_skill('use_mp');
         log('Used MP Potion!');
     } else {
-       used = false;
+        used = false;
     }
     if(used) {
         last_potion=new Date();
     }
 }
+
+let initial_pos;
 
 function auto_attack(){
     if(!attack_mode || character.rip || is_moving(character)) return;
@@ -25,7 +27,7 @@ function auto_attack(){
     let target=get_targeted_monster();
     if(!target)
     {
-        if(!mob_target){ change_target(desired_target); }
+        if(!mob_target){ update_target(desired_target); }
         target=get_nearest_monster({max_att: 80, type:mob_target});
         if(target) change_target(target);
         else
@@ -36,6 +38,11 @@ function auto_attack(){
             }
             return;
         }
+        initial_pos = {real_x: target.real_x, real_y: target.real_y}
+    }
+
+    if(!initial_pos){
+        initial_pos = {real_x: target.real_x, real_y: target.real_y}
     }
 
     trigger_skill('supershot');
@@ -43,7 +50,7 @@ function auto_attack(){
     if(!is_in_range(target))
     {
         set_message("Approaching...");
-        move_to_position(target, -character.range*.25);
+        move_to_position(target, -character.range*.5);
     }
 
     if(can_attack(target))
@@ -59,9 +66,13 @@ function auto_attack(){
         move_to_position(target, character.range);
         // circle_strafe(target, character.range);
     }
+
+    if(distance(character, initial_pos) > (character.range*2)){
+        set_message("Head back to initial...");
+        move_to_position(initial_pos, character.range);
+    }
 }
 
-let angle;
 let last_x;
 let last_y;
 let deflection = 0; // Angle to adjust if stuck
@@ -173,7 +184,7 @@ function get_first_pathable(target, enemydist, path_x, path_y, clockwise = true)
 
         loop++;
     }
-    
+
     return {d: deflection, x:path_x, y:path_y}
 }
 
@@ -306,6 +317,28 @@ function auto_party(){
 
 }
 
+function join_events(){
+    if(parent.S.goobrawl && character.map !== "goobrawl") {
+        join('goobrawl'); // Takes you there
+        update_target('bgoo');
+        // Regular goo's have "goo" ID's - they are buffed up
+        // Rainbow goo is "rgoo"
+    }
+
+    if(parent.S.franky && !get_nearest_monster({type:'franky'})) {
+        join('franky');
+        update_target("franky");
+        // Takes you there
+    }
+}
+
+function sell_things(start_num, end_num){
+    while (start_num <= end_num){
+        sell(start_num, 1);
+        start_num++;
+    }
+}
+
 function assist(){
     let party = get_party();
     let target = party[assist_target];
@@ -328,7 +361,7 @@ function assist(){
     }
 }
 
-function change_target(mob){
+function update_target(mob){
     mob_target = mob;
 }
 

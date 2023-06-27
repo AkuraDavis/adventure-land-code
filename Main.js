@@ -8,8 +8,8 @@ let assist_mode = false;
 let assist_target = "Feriath";
 let autoparty = true;
 let mob_target;
-let desired_target = "armadillo";
-// let mob_target = "rat";
+// let desired_target = "armadillo";
+let desired_target = "porcupine";
 
 load_code(1);
 
