@@ -7,9 +7,10 @@ let attack_mode = true;
 let assist_mode = false;
 let assist_target = "Feriath";
 let autoparty = true;
-let mob_target;
-// let desired_target = "armadillo";
-let desired_target = "porcupine";
+let bound = true;
+let mob_targets;
+// let desired_targets = ["armadillo"];
+let desired_targets = ["porcupine"];
 
 load_code(1);
 

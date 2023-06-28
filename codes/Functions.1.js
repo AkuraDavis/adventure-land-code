@@ -27,19 +27,31 @@ function auto_attack(){
     let target=get_targeted_monster();
     if(!target)
     {
-        if(!mob_target){ update_target(desired_target); }
-        target=get_nearest_monster({max_att: 80, type:mob_target});
-        if(target) change_target(target);
-        else
-        {
+        if(!mob_targets){ update_targets(desired_targets); }
+
+        for (let option of desired_targets) {
+            target=get_nearest_monster({max_att: 80, type:option});
+            if(target) {
+                change_target(target);
+                break;
+            }
+        }
+
+        if(!target){
             set_message("Pathing...");
             if(!is_moving(character)) {
-                smart_move(mob_target);
+                smart_move(mob_targets[0]);
+                return;
             }
-            return;
         }
+
+
         initial_pos = {real_x: target.real_x, real_y: target.real_y}
+    } else {
+
     }
+
+    bound = (target.target === character.name);
 
     if(!initial_pos){
         initial_pos = {real_x: target.real_x, real_y: target.real_y}
@@ -67,7 +79,7 @@ function auto_attack(){
         // circle_strafe(target, character.range);
     }
 
-    if(distance(character, initial_pos) > (character.range*2)){
+    if(bound && (distance(character, initial_pos) > (character.range*2))){
         set_message("Head back to initial...");
         move_to_position(initial_pos, character.range);
     }
@@ -265,7 +277,8 @@ function restock(){
             restocking = true;
 
             smart_move(find_npc('fancypots'));
-        } else {
+        } else if(distance(character, find_npc('fancypots')) < 200){
+            stop();
             buy("hpot0", 100);
         }
 
@@ -276,7 +289,8 @@ function restock(){
             if(!restocking) use_skill('use_town');
             restocking = true;
             smart_move(find_npc('fancypots'));
-        } else {
+        } else if(distance(character, find_npc('fancypots')) < 200){
+            stop();
             buy("mpot0", 100);
         }
     } else {
@@ -330,6 +344,13 @@ function join_events(){
         update_target("franky");
         // Takes you there
     }
+
+
+    // I dont think anyone does crab event, i havent seen anyone there lol
+    if(parent.S.crabxx && !get_nearest_monster({type:'crabxx'})) {
+        join('crabxx');
+        // Takes you there
+    }
 }
 
 function sell_things(start_num, end_num){
@@ -361,8 +382,8 @@ function assist(){
     }
 }
 
-function update_target(mob){
-    mob_target = mob;
+function update_targets(mobs){
+    mob_targets = mobs;
 }
 
 let current_xp;
