@@ -10,7 +10,7 @@ let autoparty = true;
 let bound = true;
 let mob_targets;
 // let desired_targets = ["armadillo"];
-let desired_targets = ["porcupine"];
+let desired_targets = ["bee","porcupine"];
 
 load_code(1);
 

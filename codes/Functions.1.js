@@ -71,7 +71,7 @@ function auto_attack(){
         attack(target);
     }
 
-    if(distance(character, target) < (character.range/2)){
+    if((distance(character, target) < (character.range/2)) && bound){
         // Too close, move back
 
         set_message("Kiting...");
