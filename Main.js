@@ -9,7 +9,7 @@ let assist_target = "Feriath";
 let autoparty = true;
 let bound = true;
 let mob_targets;
-// let desired_targets = ["armadillo"];
+//let desired_targets = ["armadillo"];
 let desired_targets = ["bee","porcupine"];
 
 load_code(1);
@@ -21,6 +21,7 @@ setInterval(function(){
     restock();
     loot();
     xp_tracker();
+    time_to_level();
 
     auto_attack();
     auto_party();

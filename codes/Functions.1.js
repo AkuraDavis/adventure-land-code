@@ -22,7 +22,7 @@ function smart_potions() {
 let initial_pos;
 
 function auto_attack(){
-    if(!attack_mode || character.rip || is_moving(character)) return;
+    if(!attack_mode || character.rip || smart.moving) return;
 
     let target=get_targeted_monster();
     if(!target)
@@ -43,6 +43,7 @@ function auto_attack(){
                 smart_move(mob_targets[0]);
                 return;
             }
+            return;
         }
 
 
@@ -93,7 +94,7 @@ let degrees = 2;
 function move_to_position(target, enemydist) //Movement Algorithm
 {
     try {
-        console.log("Moving");
+        //console.log("Moving");
         // Calculate the difference between target and character positions
         let diff_x = target.real_x - character.real_x;
         let diff_y = target.real_y - character.real_y;
@@ -102,7 +103,7 @@ function move_to_position(target, enemydist) //Movement Algorithm
         let new_x = character.real_x - (diff_x * enemydist) + (Math.cos(deflection) * 0.5);
         let new_y = character.real_y - (diff_y * enemydist) + (Math.sin(deflection) * 0.5);
 
-        console.log("Calculated initial xy");
+        //console.log("Calculated initial xy");
 
         // Ensure the new_x and new_y are not farther away from target.real_x and target.real_y than enemydist
         let dist_from_target = Math.sqrt(Math.pow(target.real_x - new_x, 2) + Math.pow(target.real_y - new_y, 2));
@@ -114,7 +115,7 @@ function move_to_position(target, enemydist) //Movement Algorithm
             let adjusted_dy = dx * Math.sin(deflection) + dy * Math.cos(deflection);
             new_x = target.real_x + (scaling_factor * adjusted_dx);
             new_y = target.real_y + (scaling_factor * adjusted_dy);
-            console.log("Distance x/y");
+            //console.log("Distance x/y");
         }
 
         // Check if the character is stuck
@@ -122,23 +123,23 @@ function move_to_position(target, enemydist) //Movement Algorithm
         let distance_x = Math.abs(last_x - character.real_x);
         let distance_y = Math.abs(last_y - character.real_y);
         if ((distance_x < 0.5 || distance_y < 0.5) && !can_move_to(new_x, new_y)) {
-            console.log("Stuck!");
+            //console.log("Stuck!");
             // Character is stuck, increase deflection angle
             // deflection += 5 * Math.PI / 180; // Convert 5 degrees to radians
 
             let clockwise_path = get_first_pathable(target, enemydist, new_x, new_y);
             let counter_path = get_first_pathable(target, enemydist, new_x, new_y, false);
 
-            console.log("Got paths.");
+            //console.log("Got paths.");
 
             if (abs(clockwise_path.d) <= abs(counter_path.d)) {
                 new_x = clockwise_path.x;
                 new_y = clockwise_path.y;
-                log("Moving Clockwise");
+                // log("Moving Clockwise");
             } else {
                 new_x = counter_path.x;
                 new_y = counter_path.y;
-                log("Moving Counter-Clockwise");
+                // log("Moving Counter-Clockwise");
             }
 
         } else {
@@ -146,7 +147,7 @@ function move_to_position(target, enemydist) //Movement Algorithm
             deflection = 0;
         }
 
-        console.log("Draw line and move.");
+        //console.log("Draw line and move.");
 
         last_x = character.real_x;
         last_y = character.real_y;
@@ -390,8 +391,31 @@ let current_xp;
 function xp_tracker(){
     if (!current_xp) current_xp = character.xp;
 
-    if(character.xp !== current_xp) {
-        log("Gained " + (character.xp - current_xp) + " xp!");
+    if (character.xp !== current_xp) {
+        let gained_xp = character.xp - current_xp;
+
+        log("Gained " + (gained_xp) + " xp!");
         current_xp = character.xp;
     }
+}
+
+let start_xp;
+let xp_time;
+function time_to_level(){
+    if (!start_xp) start_xp = character.xp;
+    if (!xp_time) xp_time =  new Date();
+
+    let time_since = mssince(xp_time);
+    if (time_since > (60 * 1000)) {
+        let gained_xp = character.xp - start_xp;
+        let xp_per_sec = gained_xp / (time_since / 1000);
+        let to_level = character.max_xp - character.xp;
+
+        console.log(Math.round(to_level / xp_per_sec / 60) + " minutes till next level at current " + xp_per_sec.toFixed(2) + "xp/s.");
+        log(Math.round(to_level / xp_per_sec / 60) + " minutes till next level at current " + xp_per_sec.toFixed(2) + "xp/s.");
+
+        xp_time = new Date();
+        start_xp = character.xp;
+    }
+
 }
